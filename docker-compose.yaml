@@ -1,0 +1,45 @@
+version: '3'
+
+
+services:
+
+  moodle_db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_TCP_PORT: 3310
+
+      MYSQL_DATABASE: $MYSQL_DATABASENAME
+      MYSQL_USER: $MYSQL_USERNAME
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+    volumes:
+      - ./moodle-database.sql:/docker-entrypoint-initdb.d/datadump.sql
+      - ./moodledb_data:/var/lib/mysql
+
+  moodle:
+    image: docker.io/bitnami/moodle:latest
+    ports:
+      - "81:8080"
+      - "444:8443"
+    environment:
+      MOODLE_DATA: ${MOODLE_WWW_ROOT:-http://localhost:8080}
+      #MOODLE_SKIP_INSTALL: 'True'
+
+      MOODLE_DATABASE_TYPE: mysqli
+      MOODLE_DATABASE_HOST: moodle_db
+      MOODLE_DATABASE_PORT_NUMBER: 3310
+      MOODLE_DATABASE_NAME: $MYSQL_DATABASENAME
+      MOODLE_DATABASE_USER: $MYSQL_USERNAME
+      MOODLE_DATABASE_PASSWORD: $MYSQL_PASSWORD
+
+      #APPLICATION CREDENTIALS
+      MOODLE_USERNAME: $MOODLE_USERNAME
+      MOODLE_PASSWORD: $MOODLE_PASSWORD 
+
+      #BITNAMI_DEBUG: 'True'
+    volumes:
+      - ./moodle:/bitnami/moodle:rw
+      - ./moodledata:/bitnami/moodledata:rw
+    depends_on:
+      - moodle_db
+
