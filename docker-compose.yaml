@@ -19,8 +19,7 @@ services:
   moodle:
     image: docker.io/bitnami/moodle:latest
     ports:
-      - "81:8080"
-      - "444:8443"
+      - "127.0.0.1:1337:8080"
     environment:
       MOODLE_DATA: ${MOODLE_WWW_ROOT:-http://localhost:8080}
       #MOODLE_SKIP_INSTALL: 'True'
